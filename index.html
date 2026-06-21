@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Danau Batur & Konflik Ruang — Kintamani</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --brown:#1c1108;--gold:#c0832a;--cream:#f5f1ea;--muted:#edeae2;
+      --font:'Plus Jakarta Sans',system-ui,sans-serif;
+    }
+    body{font-family:var(--font);background:var(--cream);color:#2c2416;line-height:1.5}
+
+    nav{
+      background:rgba(22,12,4,0.92);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+      color:#f5f1ea;display:flex;align-items:center;justify-content:space-between;
+      padding:.7rem 1.5rem;position:sticky;top:0;z-index:1000;
+      border-bottom:2px solid var(--gold);
+    }
+    .nav-title{font-size:.9rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#f5f1ea}
+    .nav-links{display:flex;gap:.45rem;flex-wrap:wrap}
+    .nav-links a{
+      color:var(--gold);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+      text-decoration:none;padding:.22rem .65rem;border:1px solid var(--gold);border-radius:2rem;transition:all .15s;
+    }
+    .nav-links a:hover{background:var(--gold);color:var(--brown)}
+
+    .hero{
+      position:relative;min-height:340px;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;text-align:center;
+      padding:4rem 2rem 3rem;overflow:hidden;background:#1c2a18;
+    }
+    .hero-bg{
+      position:absolute;inset:0;
+      background-image:url( + hero_bg + );
+      background-size:cover;background-position:center bottom;
+      image-rendering:pixelated;image-rendering:crisp-edges;opacity:.45;
+    }
+    .hero-overlay{
+      position:absolute;inset:0;
+      background:linear-gradient(to bottom,rgba(15,25,12,.78) 0%,rgba(15,25,12,.42) 50%,rgba(15,25,12,.82) 100%);
+    }
+    .hero>*:not(.hero-bg):not(.hero-overlay){position:relative;z-index:1}
+    .hero-label{
+      font-size:.65rem;font-weight:700;letter-spacing:.45em;text-transform:uppercase;
+      color:var(--gold);margin-bottom:.75rem;background:rgba(0,0,0,.3);
+      padding:.2rem .7rem;border-radius:2rem;display:inline-block;
+    }
+    .hero h1{
+      font-size:clamp(1.9rem,5vw,3rem);font-weight:800;line-height:1.1;
+      color:#fff;text-shadow:0 2px 20px rgba(0,0,0,.5);margin-bottom:.7rem;
+    }
+    .hero p{font-size:.88rem;color:rgba(255,255,255,.7);font-weight:500;max-width:520px}
+
+    .stats{
+      display:flex;justify-content:center;gap:0;flex-wrap:wrap;
+      background:#1c1108;border-bottom:2px solid #2e1c08;
+    }
+    .stat{text-align:center;padding:1rem 2rem;border-right:1px solid #2e1c08}
+    .stat:last-child{border-right:none}
+    .stat-num{font-size:1.5rem;font-weight:800;color:var(--gold);display:block;line-height:1}
+    .stat-label{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:#6a5030;margin-top:.2rem;font-weight:600}
+
+    section{padding:3rem 1.5rem;max-width:1100px;margin:0 auto}
+    .section-muted{background:var(--muted);max-width:100%;padding:3rem 1.5rem}
+    .section-muted>.inner{max-width:1100px;margin:0 auto}
+    .sec-header{margin-bottom:1.5rem}
+    .sec-title{font-size:1.25rem;font-weight:800;margin-bottom:.3rem;display:flex;align-items:center;gap:.55rem;color:#1c1108}
+    .sec-title svg{width:1.1rem;height:1.1rem;stroke:var(--gold);flex-shrink:0}
+    .sec-sub{font-size:.8rem;color:#7a6a58;font-weight:500}
+    .divider{height:2px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:1.5rem;border-radius:1px}
+
+    /* ── TIMELINE CHART ── */
+    .chart-wrap{background:#fff;border-radius:10px;border:2px solid #ddd6c8;padding:1.5rem;box-shadow:0 4px 20px rgba(0,0,0,.06)}
+    .chart-svg{width:100%;display:block}
+    .timeline-note{font-size:.72rem;color:#9a8a78;font-weight:500;margin-top:.8rem;font-style:italic;line-height:1.5}
+
+    .data-sources{
+      margin-top:1.5rem;background:#faf7f2;border:1px solid #e0d8cc;
+      border-radius:8px;padding:1rem 1.2rem;
+    }
+    .data-sources h4{font-size:.72rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#7a6050;margin-bottom:.5rem}
+    .source-list{display:flex;flex-direction:column;gap:.3rem}
+    .source-item{display:flex;align-items:flex-start;gap:.5rem;font-size:.73rem;color:#5a4a38;font-weight:500}
+    .source-item a{color:var(--gold);text-decoration:none;font-weight:700}
+    .source-item a:hover{text-decoration:underline}
+    .source-dot{width:.45rem;height:.45rem;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:.35rem}
+
+    /* ── MAP ── */
+    #konflik-map{height:500px;border-radius:10px;border:2px solid #ddd6c8;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+    .map-legend-wrap{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;margin-top:.8rem;font-size:.72rem;font-weight:700}
+    .leg-item{display:flex;align-items:center;gap:.35rem}
+    .leg-swatch{width:1rem;height:.6rem;border-radius:2px;flex-shrink:0}
+    .leg-dot{width:.65rem;height:.65rem;border-radius:50%;flex-shrink:0}
+
+    /* layer toggle */
+    .layer-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1rem}
+    .layer-btn{
+      display:inline-flex;align-items:center;gap:.3rem;
+      padding:.28rem .8rem;border:1.5px solid currentColor;border-radius:2rem;
+      cursor:pointer;font-family:var(--font);font-size:.72rem;font-weight:700;
+      background:transparent;transition:all .15s;
+    }
+    .layer-btn:hover{opacity:.65}
+    .layer-btn.active{color:#fff!important;background:var(--brown)!important;border-color:var(--brown)!important}
+
+    /* popup */
+    .leaflet-popup-content-wrapper{border-radius:8px!important;padding:0!important;box-shadow:0 4px 16px rgba(0,0,0,.15)!important}
+    .leaflet-popup-content{margin:0!important;min-width:200px;max-width:260px}
+    .popup-inner{padding:.75rem .9rem}
+    .popup-type{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.6;margin-bottom:.18rem}
+    .popup-name{font-size:.88rem;font-weight:800;line-height:1.25;margin-bottom:.3rem;color:#1c1108}
+    .popup-desc{font-size:.75rem;color:#4a3a28;line-height:1.5;margin-bottom:.3rem}
+    .popup-src{font-size:.68rem;color:#9a8a78;font-style:italic}
+
+    footer{text-align:center;padding:1.3rem;font-size:.65rem;letter-spacing:.08em;background:#1c1108;color:#5a4a34;font-weight:500;text-transform:uppercase}
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-title">Kintamani — Data &amp; Ruang</div>
+  <div class="nav-links">
+    <a href="#sedimentasi">Sedimentasi Danau</a>
+    <a href="#konflik-ruang">Konflik Ruang</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-label">Visualisasi Data Lingkungan &amp; Tata Ruang</div>
+  <h1>Danau Batur &amp; Konflik Ruang<br>di Kintamani</h1>
+  <p>Rekonstruksi data sedimentasi Danau Batur &middot; Peta kontekstual konflik wilayah adat, administrasi, dan kawasan konservasi</p>
+</div>
+
+<div class="stats">
+  <div class="stat"><span class="stat-num">~20m</span><span class="stat-label">Pendangkalan Estimasi</span></div>
+  <div class="stat"><span class="stat-num">60–70m</span><span class="stat-label">Kedalaman Maks. 2011</span></div>
+  <div class="stat"><span class="stat-num">85,66 ha</span><span class="stat-label">Lahan TWA Diperebutkan</span></div>
+  <div class="stat"><span class="stat-num">3 layer</span><span class="stat-label">Klaim Wilayah Tumpang Tindih</span></div>
+</div>
+
+<!-- SECTION 1: SEDIMENTASI -->
+<section id="sedimentasi">
+  <div class="sec-header">
+    <div class="sec-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+      </svg>
+      Pendangkalan Danau Batur — Rekonstruksi Data
+    </div>
+    <p class="sec-sub">Estimasi perubahan kedalaman maksimum Danau Batur dari berbagai sumber penelitian. Data bersifat rekonstruktif — bukan deret waktu resmi satu lembaga.</p>
+  </div>
+  <div class="divider"></div>
+
+  <div class="chart-wrap">
+    <svg class="chart-svg" id="depth-chart" viewBox="0 0 800 380" preserveAspectRatio="xMidYMid meet"></svg>
+    <p class="timeline-note">
+      ⚠ <strong>Catatan metodologi:</strong> Grafik ini merekonstruksi tren dari titik-titik data yang tersebar di berbagai jurnal dan keterangan narasumber. Tidak ada deret waktu batimetri resmi yang berkelanjutan untuk Danau Batur. Angka perlu diverifikasi dengan pengukuran lapangan terbaru dari BRIN/BWS Bali.
+    </p>
+  </div>
+
+  <div class="data-sources">
+    <h4>Sumber Data</h4>
+    <div class="source-list">
+      <div class="source-item">
+        <div class="source-dot"></div>
+        <span><strong>~1990-an, ~80m</strong> — Estimasi historis, disebutkan narasumber wawancara lapangan (2026). Belum terverifikasi publikasi.</span>
+      </div>
+      <div class="source-item">
+        <div class="source-dot"></div>
+        <span><strong>2011, 60–70m</strong> — <a href="https://www.researchgate.net/publication/299465226_KAJIAN_KUALITAS_PERAIRAN_DAN_POTENSI_PRODUKSI_SUMBER_DAYA_IKAN_DI_DANAU_BATUR_BALI" target="_blank" rel="noopener">Kajian Kualitas Perairan Danau Batur</a>, Prosiding Seminar Nasional Limnologi VI (2012), Pusat Penelitian Limnologi LIPI.</span>
+      </div>
+      <div class="source-item">
+        <div class="source-dot"></div>
+        <span><strong>2017, 65–68m</strong> — Pengukuran lapangan bersama Balai Wilayah Sungai (BWS) Bali, disebutkan narasumber wawancara lapangan (2026).</span>
+      </div>
+      <div class="source-item">
+        <div class="source-dot"></div>
+        <span><strong>Kedalaman rata-rata 50,8m, volume 815,38 juta m³</strong> — <a href="https://www.danauprioritasnasional.com/danau/danau-batur" target="_blank" rel="noopener">Danau Prioritas Nasional — Danau Batur</a>, Bappeda Litbang Provinsi Bali.</span>
+      </div>
+      <div class="source-item">
+        <div class="source-dot"></div>
+        <span><strong>Sedimentasi dari KJA &amp; pertanian</strong> — <a href="https://ojs.unud.ac.id/index.php/blje/article/download/42960/26048/" target="_blank" rel="noopener">Model Penanggulangan Sedimentasi Danau Berbasis Masyarakat di Pulau Bali</a>, Jurnal Bumi Lestari Vol.17 No.2 (2017), I Made Nada dkk.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: KONFLIK RUANG -->
+<div class="section-muted" id="konflik-ruang">
+  <div class="inner">
+    <div class="sec-header">
+      <div class="sec-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+        Peta Kontekstual Konflik Ruang Kintamani
+      </div>
+      <p class="sec-sub">Overlay batas administrasi desa, kawasan TWA/kehutanan, dan titik-titik konflik. Batas wilayah adat Desa Batur (Raja Purana) belum tersedia dalam format GIS publik — ditampilkan sebagai zona estimasi naratif.</p>
+    </div>
+    <div class="divider"></div>
+
+    <div class="layer-bar">
+      <button class="layer-btn active" data-layer="all" style="color:#2c2416;border-color:#2c2416">Semua Layer</button>
+      <button class="layer-btn" data-layer="twa" style="color:#1a6fa8;border-color:#1a6fa8">Kawasan TWA / Kehutanan</button>
+      <button class="layer-btn" data-layer="adat" style="color:#2e7d48;border-color:#2e7d48">Estimasi Wilayah Adat</button>
+      <button class="layer-btn" data-layer="konflik" style="color:#b52b2b;border-color:#b52b2b">Titik Konflik</button>
+    </div>
+
+    <div id="konflik-map"></div>
+
+    <div class="map-legend-wrap" style="margin-top:.8rem">
+      <div class="leg-item"><div class="leg-swatch" style="background:rgba(26,111,168,0.35);border:2px solid #1a6fa8"></div><span style="color:#1a6fa8">Kawasan TWA / Kehutanan</span></div>
+      <div class="leg-item"><div class="leg-swatch" style="background:rgba(46,125,72,0.25);border:2px dashed #2e7d48"></div><span style="color:#2e7d48">Estimasi Wilayah Adat (Raja Purana)*</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:#b52b2b"></div><span style="color:#b52b2b">Titik Konflik Lahan</span></div>
+      <div class="leg-item"><div class="leg-dot" style="background:#c0832a;border:2px solid #fff"></div><span style="color:#c0832a">Danau Batur</span></div>
+    </div>
+    <p style="font-size:.7rem;color:#9a8a78;margin-top:.5rem;font-style:italic">* Batas adat bersifat estimasi berdasarkan keterangan lisan dan wawancara lapangan. Data spasial resmi sedang diinisiasi oleh BRWA bersama Desa Adat Batur.</p>
+
+    <div class="data-sources" style="margin-top:1.5rem">
+      <h4>Sumber Data Peta</h4>
+      <div class="source-list">
+        <div class="source-item">
+          <div class="source-dot"></div>
+          <span><strong>Batas administrasi desa</strong> — <a href="https://geoservices.big.go.id/portal/apps/webappviewer/index.html?id=9917592df1f24501ae804b7d346c08fb" target="_blank" rel="noopener">Badan Informasi Geospasial (BIG)</a>, Geodatabase Batas Wilayah Administrasi Desa edisi Mei 2021. Koordinat titik pada peta ini bersifat estimasi karena data shapefile resmi perlu diunduh terpisah.</span>
+        </div>
+        <div class="source-item">
+          <div class="source-dot"></div>
+          <span><strong>Kawasan TWA Gunung Batur</strong> — Data kawasan konservasi KLHK/BKSDA Bali. Batas pada peta ini bersifat indikatif.</span>
+        </div>
+        <div class="source-item">
+          <div class="source-dot"></div>
+          <span><strong>Wilayah adat Desa Batur</strong> — Berdasarkan keterangan wawancara lapangan (2026) dan inisiasi pemetaan oleh <a href="https://brwa.or.id" target="_blank" rel="noopener">BRWA (Badan Registrasi Wilayah Adat)</a>. Data GIS belum tersedia publik.</span>
+        </div>
+        <div class="source-item">
+          <div class="source-dot"></div>
+          <span><strong>Titik konflik</strong> — Dikompilasi dari berita dan laporan: <a href="https://balebengong.id/konflik-di-twa-gunung-batur/" target="_blank" rel="noopener">Bale Bengong</a>, <a href="https://mongabay.co.id/2025/10/19/warga-protes-bangunan-wisata-di-hutan-konservasi-bali/" target="_blank" rel="noopener">Mongabay</a>, KSDA Bali.</span>
+        </div>
+        <div class="source-item">
+          <div class="source-dot"></div>
+          <span><strong>Latar konteks sejarah</strong> — Berdasarkan keterangan narasumber tentang Raja Purana Batur, letusan 1926, dan perpindahan Desa Batur ke Muara Batur.</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  Data sedimentasi: LIPI/BRIN, Bappeda Bali, wawancara lapangan &middot; Data peta: BIG, BKSDA Bali, BRWA &middot; Koordinat estimasi berdasarkan sumber terbuka &middot; Kintamani, Kabupaten Bangli, Bali
+</footer>
+
+<script>
+// ── CHART 1: SEDIMENTASI ──
+(function(){
+  const svg = document.getElementById('depth-chart');
+  const W = 800, H = 380;
+  const pad = {top:40, right:40, bottom:60, left:70};
+  const cW = W - pad.left - pad.right;
+  const cH = H - pad.top - pad.bottom;
+
+  // data points: [year, depth_m, label, source_short, estimated]
+  const data = [
+    {year:1990, depth:80,   label:'~80m',   src:'Narasumber wawancara', est:true},
+    {year:2011, depth:65,   label:'60–70m', src:'LIPI, Seminar Limnologi 2012', est:false},
+    {year:2017, depth:66.5, label:'65–68m', src:'Pengukuran BWS Bali', est:false},
+    {year:2024, depth:63,   label:'<65m',   src:'Estimasi tren', est:true},
+  ];
+
+  const minY = 1985, maxY = 2026;
+  const minD = 55, maxD = 90;
+
+  function xScale(y){ return (y - minY) / (maxY - minY) * cW; }
+  function yScale(d){ return cH - (d - minD) / (maxD - minD) * cH; }
+
+  let svgStr = `<g transform="translate(${pad.left},${pad.top})">`;
+
+  // --- Background bands ---
+  svgStr += `<rect x="0" y="0" width="${cW}" height="${cH}" fill="#f8f6f2" rx="4"/>`;
+
+  // --- Grid lines & Y axis labels ---
+  [55,60,65,70,75,80,85,90].forEach(d => {
+    const y = yScale(d);
+    svgStr += `<line x1="0" y1="${y}" x2="${cW}" y2="${y}" stroke="#e0d8cc" stroke-width="1"/>`;
+    svgStr += `<text x="-10" y="${y+4}" text-anchor="end" font-size="11" fill="#9a8878" font-family="Plus Jakarta Sans,sans-serif">${d}m</text>`;
+  });
+
+  // --- X axis labels ---
+  [1990,1995,2000,2005,2010,2015,2020,2025].forEach(y => {
+    const x = xScale(y);
+    svgStr += `<line x1="${x}" y1="0" x2="${x}" y2="${cH}" stroke="#e8e0d4" stroke-width="1" stroke-dasharray="3,3"/>`;
+    svgStr += `<text x="${x}" y="${cH+20}" text-anchor="middle" font-size="11" fill="#9a8878" font-family="Plus Jakarta Sans,sans-serif">${y}</text>`;
+  });
+
+  // --- Axis labels ---
+  svgStr += `<text x="${cW/2}" y="${cH+45}" text-anchor="middle" font-size="12" font-weight="700" fill="#5a4a38" font-family="Plus Jakarta Sans,sans-serif">Tahun</text>`;
+  svgStr += `<text transform="rotate(-90)" x="${-cH/2}" y="-52" text-anchor="middle" font-size="12" font-weight="700" fill="#5a4a38" font-family="Plus Jakarta Sans,sans-serif">Kedalaman Maksimum (m)</text>`;
+
+  // --- Trend zone (filled area) ---
+  const pts = data.map(d => `${xScale(d.year)},${yScale(d.depth)}`).join(' ');
+  const ptsBtm = [...data].reverse().map(d => `${xScale(d.year)},${cH}`).join(' ');
+  svgStr += `<polygon points="${pts} ${ptsBtm}" fill="rgba(26,111,168,0.08)"/>`;
+
+  // --- Trend line ---
+  const lineD = data.map((d,i) => `${i===0?'M':'L'}${xScale(d.year)} ${yScale(d.depth)}`).join(' ');
+  svgStr += `<path d="${lineD}" fill="none" stroke="#1a6fa8" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  // --- Estimated segment dashed ---
+  svgStr += `<line x1="${xScale(2017)}" y1="${yScale(66.5)}" x2="${xScale(2024)}" y2="${yScale(63)}"
+    stroke="#1a6fa8" stroke-width="2" stroke-dasharray="6,4"/>`;
+
+  // --- Causal annotations ---
+  svgStr += `<rect x="${xScale(2003)}" y="${yScale(82)}" width="110" height="28" rx="4" fill="rgba(181,43,43,0.1)" stroke="#b52b2b" stroke-width="1"/>`;
+  svgStr += `<text x="${xScale(2003)+6}" y="${yScale(82)+12}" font-size="9.5" fill="#b52b2b" font-family="Plus Jakarta Sans,sans-serif" font-weight="700">Boom KJA &amp; pertanian</text>`;
+  svgStr += `<text x="${xScale(2003)+6}" y="${yScale(82)+24}" font-size="9" fill="#b52b2b" font-family="Plus Jakarta Sans,sans-serif">intensif → sedimen meningkat</text>`;
+  svgStr += `<line x1="${xScale(2003)+55}" y1="${yScale(82)+28}" x2="${xScale(2010)}" y2="${yScale(65.5)}" stroke="#b52b2b" stroke-width="1" stroke-dasharray="3,2"/>`;
+
+  // --- Data points ---
+  data.forEach(d => {
+    const x = xScale(d.year), y = yScale(d.depth);
+    const color = d.est ? '#9a8878' : '#1a6fa8';
+    svgStr += `<circle cx="${x}" cy="${y}" r="7" fill="#fff" stroke="${color}" stroke-width="2.5"/>`;
+    if(d.est) svgStr += `<circle cx="${x}" cy="${y}" r="3" fill="${color}" opacity="0.5"/>`;
+    else svgStr += `<circle cx="${x}" cy="${y}" r="3.5" fill="${color}"/>`;
+
+    // label above
+    const labelY = y < 40 ? y+22 : y-14;
+    svgStr += `<text x="${x}" y="${labelY}" text-anchor="middle" font-size="11" font-weight="800" fill="${color}" font-family="Plus Jakarta Sans,sans-serif">${d.label}</text>`;
+    svgStr += `<text x="${x}" y="${labelY+13}" text-anchor="middle" font-size="9" fill="#9a8878" font-family="Plus Jakarta Sans,sans-serif">${d.src}</text>`;
+  });
+
+  // --- Legend inside chart ---
+  svgStr += `<circle cx="${cW-130}" cy="16" r="5" fill="#fff" stroke="#1a6fa8" stroke-width="2"/>
+    <circle cx="${cW-130}" cy="16" r="2.5" fill="#1a6fa8"/>
+    <text x="${cW-120}" y="20" font-size="10" fill="#5a4a38" font-family="Plus Jakarta Sans,sans-serif">Data terverifikasi</text>`;
+  svgStr += `<circle cx="${cW-130}" cy="34" r="5" fill="#fff" stroke="#9a8878" stroke-width="2"/>
+    <circle cx="${cW-130}" cy="34" r="2.5" fill="#9a8878" opacity="0.5"/>
+    <text x="${cW-120}" y="38" font-size="10" fill="#5a4a38" font-family="Plus Jakarta Sans,sans-serif">Estimasi / narasumber</text>`;
+
+  // --- Title ---
+  svgStr += `<text x="${cW/2}" y="-18" text-anchor="middle" font-size="13.5" font-weight="800" fill="#1c1108" font-family="Plus Jakarta Sans,sans-serif">Tren Pendangkalan Danau Batur</text>`;
+
+  svgStr += '</g>';
+  svg.innerHTML = svgStr;
+})();
+
+
+// ── MAP: KONFLIK RUANG ──
+const map = L.map('konflik-map', {center:[-8.235, 115.385], zoom:12, minZoom:10});
+
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
+  attribution:'Tiles &copy; Esri',maxZoom:19
+}).addTo(map);
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{
+  attribution:'',maxZoom:19,opacity:0.7
+}).addTo(map);
+
+// --- Danau Batur (approximate polygon) ---
+const danaoBatur = L.polygon([
+  [-8.2155,115.3752],[-8.2095,115.3831],[-8.2040,115.3940],
+  [-8.2010,115.4068],[-8.2038,115.4155],[-8.2120,115.4217],
+  [-8.2205,115.4229],[-8.2320,115.4190],[-8.2405,115.4095],
+  [-8.2490,115.3960],[-8.2510,115.3848],[-8.2450,115.3772],
+  [-8.2330,115.3728],[-8.2210,115.3725],[-8.2155,115.3752]
+], {color:'#2980b9',fillColor:'#2980b9',fillOpacity:0.35,weight:2,dashArray:null});
+
+// --- TWA Gunung Batur (indicative) ---
+const twaLayer = L.polygon([
+  [-8.1950,115.3600],[-8.1850,115.3750],[-8.1800,115.3950],
+  [-8.1850,115.4100],[-8.1950,115.4250],[-8.2100,115.4350],
+  [-8.2250,115.4380],[-8.2400,115.4320],[-8.2500,115.4200],
+  [-8.2550,115.4050],[-8.2520,115.3900],[-8.2450,115.3750],
+  [-8.2300,115.3620],[-8.2100,115.3570],[-8.1950,115.3600]
+], {color:'#1a6fa8',fillColor:'#1a6fa8',fillOpacity:0.22,weight:2,
+    dashArray:null
+}).bindPopup(`<div class="popup-inner">
+  <div class="popup-type" style="color:#1a6fa8">Kawasan Konservasi</div>
+  <div class="popup-name">TWA Gunung Batur Bukit Payang</div>
+  <div class="popup-desc">Taman Wisata Alam dikelola BKSDA. Lahan seluas 85,66 ha di dalam kawasan ini diperebutkan untuk pembangunan taman rekreasi oleh PT TPB (izin Amdal 2023). Menurut wawancara lapangan, hampir seluruh kawasan TWA ini sebenarnya merupakan wilayah adat Desa Batur.</div>
+  <div class="popup-src">Sumber: Bale Bengong, KSDA Bali, wawancara lapangan 2026</div>
+</div>`);
+
+// --- Estimasi wilayah adat (Raja Purana Batur) ---
+const adatLayer = L.polygon([
+  [-8.1700,115.3450],[-8.1600,115.3700],[-8.1600,115.4000],
+  [-8.1700,115.4300],[-8.1900,115.4500],[-8.2100,115.4550],
+  [-8.2350,115.4500],[-8.2600,115.4300],[-8.2750,115.4050],
+  [-8.2800,115.3800],[-8.2700,115.3550],[-8.2500,115.3400],
+  [-8.2200,115.3350],[-8.1900,115.3400],[-8.1700,115.3450]
+], {color:'#2e7d48',fillColor:'#2e7d48',fillOpacity:0.12,weight:2,
+    dashArray:'10,6'
+}).bindPopup(`<div class="popup-inner">
+  <div class="popup-type" style="color:#2e7d48">Estimasi Wilayah Adat</div>
+  <div class="popup-name">Kawasan Desa Adat Batur (Raja Purana)*</div>
+  <div class="popup-desc">Berdasarkan Raja Purana Batur, wilayah adat Desa Batur jauh lebih luas dari batas administrasi saat ini. Pasca letusan 1926, kawasan ini dipotong menjadi TWA/kehutanan dan dialihkan ke desa-desa tetangga. Pemetaan resmi sedang diinisiasi BRWA.</div>
+  <div class="popup-src">* Batas bersifat estimasi naratif. Sumber: wawancara lapangan 2026, Raja Purana Batur</div>
+</div>`);
+
+// --- Titik konflik ---
+const konflikData = [
+  {lat:-8.2185, lng:115.4070, nama:'Konflik TWA Bukit Payang',
+   desc:'Rencana pembangunan taman rekreasi 85,66 ha oleh PT TPB. Warga dan pegiat lingkungan menolak karena menghancurkan kawasan konservasi dan wilayah adat.',
+   src:'Bale Bengong (2023), KSDA Bali'},
+  {lat:-8.2210, lng:115.3960, nama:'Protes Bangunan Beton TWA Kedisan',
+   desc:'Kompleks wisata (restoran, toilet, taman, parkir) dibangun di kawasan TWA rawan banjir. Warga menuntut pembongkaran.',
+   src:'Mongabay (2025)'},
+  {lat:-8.1985, lng:115.3810, nama:'Konflik Batas Desa Songan vs Batur',
+   desc:'Sengketa batas antara Desa Songan dan Desa Batur di kawasan sekitar Toyabungkah. Berkaitan dengan klaim wilayah adat Raja Purana Batur.',
+   src:'Wawancara lapangan 2026'},
+  {lat:-8.2380, lng:115.4055, nama:'KJA & Pencemaran Danau',
+   desc:'Keramba Jaring Apung (KJA) terkonsentrasi di bagian terdalam dekat Trunyan/Abang Batudinding. Limbah pakan ikan mempercepat sedimentasi dan eutrofikasi.',
+   src:'Wawancara lapangan 2026; BWS Bali'},
+  {lat:-8.2105, lng:115.4185, nama:'Letusan 1926 & Relokasi Desa Batur',
+   desc:'Desa Batur yang semula di dataran rendah Kaldera direlokasi ke Muara Batur pasca letusan dahsyat 1926. Kawasan lama — termasuk Toyabungkah dan sekitarnya — kemudian diklaim sebagai kawasan kehutanan/TWA.',
+   src:'Wawancara lapangan 2026'},
+];
+
+const konflikMarkers = konflikData.map(d => {
+  const icon = L.divIcon({
+    className:'',
+    html:`<svg width="16" height="16" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6" fill="#b52b2b" stroke="#fff" stroke-width="2"/></svg>`,
+    iconSize:[16,16],iconAnchor:[8,8],popupAnchor:[0,-10]
+  });
+  return L.marker([d.lat,d.lng],{icon}).bindPopup(`<div class="popup-inner">
+    <div class="popup-type" style="color:#b52b2b">Titik Konflik</div>
+    <div class="popup-name">${d.nama}</div>
+    <div class="popup-desc">${d.desc}</div>
+    <div class="popup-src">Sumber: ${d.src}</div>
+  </div>`);
+});
+
+// Add all layers
+let activeLayers = {twa:true, adat:true, konflik:true};
+const layerMap = {twa:twaLayer, adat:adatLayer};
+const konflikGroup = L.layerGroup(konflikMarkers);
+
+danaoBatur.addTo(map);
+twaLayer.addTo(map);
+adatLayer.addTo(map);
+konflikGroup.addTo(map);
+
+// Layer toggle
+document.querySelectorAll('.layer-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const k = btn.dataset.layer;
+    if(k === 'all'){
+      document.querySelectorAll('.layer-btn').forEach(b => b.classList.toggle('active', b.dataset.layer==='all'));
+      twaLayer.addTo(map); adatLayer.addTo(map); konflikGroup.addTo(map);
+      activeLayers = {twa:true,adat:true,konflik:true};
+    } else {
+      document.querySelector('[data-layer="all"]').classList.remove('active');
+      btn.classList.toggle('active');
+      if(k === 'konflik'){
+        btn.classList.contains('active') ? konflikGroup.addTo(map) : map.removeLayer(konflikGroup);
+      } else {
+        btn.classList.contains('active') ? layerMap[k].addTo(map) : map.removeLayer(layerMap[k]);
+      }
+    }
+  });
+});
+</script>
+</body>
+</html>
