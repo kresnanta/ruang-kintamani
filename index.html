@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TWA Kintamani — Peta Tumpang Tindih</title>
+  <title>TWA Kintamani — Analisis Tumpang Tindih</title>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
@@ -13,142 +13,113 @@
     :root{
       --brown:#1c1108;--gold:#c0832a;--cream:#f5f1ea;--muted:#edeae2;
       --font:'Plus Jakarta Sans',system-ui,sans-serif;
-      --twa-batur:#1a6fa8;
-      --twa-penelokan:#7b35a8;
-      --semiasih:#e8380d;
-      --pandi:#e8380d;
+      --batur:#1a6fa8;--panelokan:#7b35a8;--red:#c0392b;--green:#2e7d48;
     }
     body{font-family:var(--font);background:var(--cream);color:#2c2416;line-height:1.5}
 
-    /* NAV */
     nav{
-      background:rgba(22,12,4,0.93);backdrop-filter:blur(8px);
+      background:rgba(22,12,4,.93);backdrop-filter:blur(8px);
       color:#f5f1ea;display:flex;align-items:center;justify-content:space-between;
       padding:.7rem 1.5rem;position:sticky;top:0;z-index:1000;
       border-bottom:2px solid var(--gold);
     }
-    .nav-title{font-size:.88rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#f5f1ea}
+    .nav-title{font-size:.88rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
     .nav-links{display:flex;gap:.4rem;flex-wrap:wrap}
-    .nav-links a{
-      color:var(--gold);font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
-      text-decoration:none;padding:.22rem .65rem;border:1px solid var(--gold);border-radius:2rem;transition:all .15s
-    }
+    .nav-links a{color:var(--gold);font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;text-decoration:none;padding:.22rem .65rem;border:1px solid var(--gold);border-radius:2rem;transition:all .15s}
     .nav-links a:hover{background:var(--gold);color:var(--brown)}
 
-    /* HERO */
     .hero{
-      position:relative;min-height:300px;display:flex;flex-direction:column;
+      position:relative;min-height:280px;display:flex;flex-direction:column;
       align-items:center;justify-content:center;text-align:center;
-      padding:3.5rem 2rem 2.5rem;overflow:hidden;background:#1c2a18;
+      padding:3rem 2rem 2.5rem;overflow:hidden;background:#1c2a18;
     }
     .hero-bg{
       position:absolute;inset:0;
       background-image:url( + hero_bg + );
       background-size:cover;background-position:center bottom;
-      image-rendering:pixelated;image-rendering:crisp-edges;opacity:.42;
+      image-rendering:pixelated;opacity:.4;
     }
     .hero-overlay{
       position:absolute;inset:0;
-      background:linear-gradient(to bottom,rgba(15,22,10,.82) 0%,rgba(15,22,10,.45) 55%,rgba(15,22,10,.88) 100%);
+      background:linear-gradient(to bottom,rgba(15,22,10,.85) 0%,rgba(15,22,10,.42) 55%,rgba(15,22,10,.9) 100%);
     }
     .hero>*:not(.hero-bg):not(.hero-overlay){position:relative;z-index:1}
-    .hero-label{
-      font-size:.63rem;font-weight:700;letter-spacing:.42em;text-transform:uppercase;
-      color:var(--gold);margin-bottom:.65rem;background:rgba(0,0,0,.35);
-      padding:.18rem .7rem;border-radius:2rem;display:inline-block;
-    }
-    .hero h1{
-      font-size:clamp(1.6rem,4.5vw,2.7rem);font-weight:800;line-height:1.1;
-      color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.55);margin-bottom:.6rem;
-    }
-    .hero p{font-size:.85rem;color:rgba(255,255,255,.68);font-weight:500;max-width:560px}
+    .hero-label{font-size:.62rem;font-weight:700;letter-spacing:.42em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;background:rgba(0,0,0,.35);padding:.18rem .7rem;border-radius:2rem;display:inline-block}
+    .hero h1{font-size:clamp(1.5rem,4vw,2.5rem);font-weight:800;line-height:1.1;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.55);margin-bottom:.55rem}
+    .hero p{font-size:.83rem;color:rgba(255,255,255,.65);font-weight:500;max-width:540px}
 
-    /* ALERT CARDS */
-    .alert-row{
-      display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-      gap:1rem;padding:1.5rem;max-width:1100px;margin:0 auto;
-    }
-    .alert-card{
-      border-radius:8px;padding:1rem 1.2rem;display:flex;gap:.85rem;align-items:flex-start;
-      border:2px solid;
-    }
-    .alert-card.overlap{background:#fff2f0;border-color:#b52b2b}
-    .alert-card.outside{background:#f0faf3;border-color:#2e7d48}
-    .alert-icon{font-size:1.4rem;flex-shrink:0;margin-top:.1rem}
-    .alert-title{font-size:.82rem;font-weight:800;margin-bottom:.2rem}
-    .alert-desc{font-size:.73rem;line-height:1.55;opacity:.85}
-    .alert-card.overlap .alert-title{color:#b52b2b}
-    .alert-card.outside .alert-title{color:#2e7d48}
+    /* VERDICT CARDS */
+    .verdict-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1rem;padding:1.25rem 1.5rem;max-width:1100px;margin:0 auto}
+    .vcard{border-radius:8px;padding:1rem 1.1rem;border:2px solid;display:flex;gap:.8rem;align-items:flex-start}
+    .vcard.unclear{background:#fffbf0;border-color:#c0832a}
+    .vcard.inside{background:#fff2f0;border-color:var(--red)}
+    .vcard.outside{background:#f0faf3;border-color:var(--green)}
+    .vcard-icon{font-size:1.3rem;flex-shrink:0;margin-top:.05rem}
+    .vcard-title{font-size:.82rem;font-weight:800;margin-bottom:.2rem}
+    .vcard.unclear .vcard-title{color:#9a6a10}
+    .vcard.inside .vcard-title{color:var(--red)}
+    .vcard.outside .vcard-title{color:var(--green)}
+    .vcard-desc{font-size:.72rem;line-height:1.55;opacity:.85}
 
-    /* MAIN */
-    .main{max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
-    .sec-header{margin-bottom:1.2rem}
-    .sec-title{font-size:1.15rem;font-weight:800;margin-bottom:.28rem;display:flex;align-items:center;gap:.5rem;color:#1c1108}
-    .sec-title svg{width:1rem;height:1rem;stroke:var(--gold);flex-shrink:0}
-    .sec-sub{font-size:.78rem;color:#7a6a58;font-weight:500}
-    .divider{height:2px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:1.2rem;border-radius:1px}
+    .wrap{max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+    .sec-title{font-size:1.1rem;font-weight:800;margin-bottom:.25rem;display:flex;align-items:center;gap:.5rem;color:#1c1108}
+    .sec-title svg{width:.95rem;height:.95rem;stroke:var(--gold);flex-shrink:0}
+    .sec-sub{font-size:.77rem;color:#7a6a58;font-weight:500;margin-bottom:1.1rem}
+    .divider{height:2px;background:linear-gradient(to right,var(--gold),transparent);margin-bottom:1.1rem;border-radius:1px}
 
     /* MAP */
     #map{height:580px;border-radius:10px;border:2px solid #ddd6c8;box-shadow:0 4px 20px rgba(0,0,0,.09)}
 
-    /* LAYER CONTROLS */
-    .layer-bar{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:.9rem}
+    .layer-bar{display:flex;gap:.38rem;flex-wrap:wrap;margin-bottom:.85rem}
     .layer-btn{
-      display:inline-flex;align-items:center;gap:.28rem;
-      padding:.26rem .78rem;border:1.5px solid currentColor;border-radius:2rem;
-      cursor:pointer;font-family:var(--font);font-size:.71rem;font-weight:700;
+      display:inline-flex;align-items:center;gap:.27rem;
+      padding:.25rem .75rem;border:1.5px solid currentColor;border-radius:2rem;
+      cursor:pointer;font-family:var(--font);font-size:.7rem;font-weight:700;
       background:transparent;transition:all .15s;
     }
     .layer-btn:hover{opacity:.65}
     .layer-btn.active{color:#fff!important;background:var(--brown)!important;border-color:var(--brown)!important}
-    .dot{width:.5rem;height:.5rem;border-radius:50%;display:inline-block;flex-shrink:0}
-    .swatch{width:1rem;height:.55rem;border-radius:2px;display:inline-block;flex-shrink:0}
+    .swatch{width:.9rem;height:.5rem;border-radius:2px;display:inline-block;flex-shrink:0}
+    .dot{width:.48rem;height:.48rem;border-radius:50%;display:inline-block;flex-shrink:0}
 
-    /* LEGEND */
-    .legend-wrap{
-      display:flex;flex-wrap:wrap;gap:.5rem 1.3rem;
-      margin-top:.85rem;font-size:.71rem;font-weight:600;
-    }
-    .leg-item{display:flex;align-items:center;gap:.32rem}
+    .legend-row{display:flex;flex-wrap:wrap;gap:.45rem 1.2rem;margin-top:.8rem;font-size:.7rem;font-weight:600}
+    .leg{display:flex;align-items:center;gap:.3rem}
 
-    /* POPUP */
+    /* Popup */
     .leaflet-popup-content-wrapper{border-radius:8px!important;padding:0!important;box-shadow:0 4px 18px rgba(0,0,0,.15)!important}
-    .leaflet-popup-content{margin:0!important;min-width:210px;max-width:270px}
-    .popup-inner{padding:.8rem .95rem}
-    .popup-type{font-size:.59rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.6;margin-bottom:.15rem}
-    .popup-name{font-size:.9rem;font-weight:800;line-height:1.25;margin-bottom:.28rem;color:#1c1108}
-    .popup-coord{font-size:.68rem;color:#7a6a58;font-family:monospace;margin-bottom:.28rem}
-    .popup-status{display:inline-flex;align-items:center;gap:.3rem;font-size:.7rem;font-weight:700;padding:.2rem .55rem;border-radius:2rem}
-    .popup-status.inside{background:#fff2f0;color:#b52b2b;border:1px solid #b52b2b}
-    .popup-status.outside{background:#f0faf3;color:#2e7d48;border:1px solid #2e7d48}
-    .popup-note{font-size:.68rem;color:#7a6a58;margin-top:.4rem;line-height:1.5;font-style:italic}
-    .popup-desc{font-size:.72rem;color:#4a3a28;margin-top:.3rem;line-height:1.55}
+    .leaflet-popup-content{margin:0!important;min-width:220px;max-width:280px}
+    .pi{padding:.8rem .95rem}
+    .pt{font-size:.59rem;letter-spacing:.18em;text-transform:uppercase;font-weight:700;opacity:.55;margin-bottom:.12rem}
+    .pn{font-size:.9rem;font-weight:800;line-height:1.2;margin-bottom:.22rem;color:#1c1108}
+    .pc{font-size:.67rem;color:#7a6a58;font-family:monospace;margin-bottom:.25rem}
+    .ps{display:inline-flex;align-items:center;gap:.28rem;font-size:.69rem;font-weight:700;padding:.18rem .52rem;border-radius:2rem;margin-bottom:.3rem}
+    .ps.in{background:#fff2f0;color:var(--red);border:1px solid var(--red)}
+    .ps.out{background:#f0faf3;color:var(--green);border:1px solid var(--green)}
+    .ps.unk{background:#fffbf0;color:#9a6a10;border:1px solid #c0832a}
+    .pd{font-size:.7rem;color:#4a3a28;line-height:1.5;margin-top:.25rem}
+    .pnote{font-size:.67rem;color:#7a6a58;line-height:1.5;font-style:italic;margin-top:.25rem}
 
-    /* METHODOLOGY */
-    .methodology{
-      background:#faf7f2;border:1px solid #e0d8cc;border-radius:8px;
-      padding:1rem 1.2rem;margin-top:1.5rem;
-    }
-    .methodology h4{font-size:.7rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#7a6050;margin-bottom:.6rem}
-    .meth-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:.7rem}
-    .meth-item{font-size:.73rem;color:#5a4a38;line-height:1.55}
-    .meth-item strong{color:#2c2416;font-weight:700}
-    .meth-item a{color:var(--gold);text-decoration:none;font-weight:600}
-    .meth-item a:hover{text-decoration:underline}
+    /* Reference maps */
+    .ref-maps{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-top:1.5rem}
+    @media(max-width:600px){.ref-maps{grid-template-columns:1fr}}
+    .ref-map-card{border-radius:8px;overflow:hidden;border:2px solid #ddd6c8}
+    .ref-map-card img{width:100%;display:block;max-height:220px;object-fit:cover}
+    .ref-map-label{padding:.6rem .8rem;background:#1c1108;color:var(--gold);font-size:.72rem;font-weight:700}
 
-    /* SOURCES */
-    .sources{
-      background:#faf7f2;border:1px solid #e0d8cc;border-radius:8px;
-      padding:1rem 1.2rem;margin-top:1rem;
-    }
-    .sources h4{font-size:.7rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#7a6050;margin-bottom:.5rem}
-    .src-list{display:flex;flex-direction:column;gap:.3rem}
-    .src-item{display:flex;align-items:flex-start;gap:.5rem;font-size:.72rem;color:#5a4a38}
+    /* methodology & sources */
+    .info-box{background:#faf7f2;border:1px solid #e0d8cc;border-radius:8px;padding:.9rem 1.1rem;margin-top:1rem}
+    .info-box h4{font-size:.68rem;font-weight:800;letter-spacing:.15em;text-transform:uppercase;color:#7a6050;margin-bottom:.5rem}
+    .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:.6rem}
+    .info-item{font-size:.71rem;color:#5a4a38;line-height:1.55}
+    .info-item strong{color:#2c2416;font-weight:700}
+    .info-item a{color:var(--gold);text-decoration:none;font-weight:600}
+    .info-item a:hover{text-decoration:underline}
+    .src-list{display:flex;flex-direction:column;gap:.28rem}
+    .src-item{display:flex;align-items:flex-start;gap:.45rem;font-size:.7rem;color:#5a4a38}
     .src-item a{color:var(--gold);text-decoration:none;font-weight:600}
-    .src-item a:hover{text-decoration:underline}
-    .src-dot{width:.4rem;height:.4rem;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:.35rem}
+    .sdot{width:.38rem;height:.38rem;border-radius:50%;background:var(--gold);flex-shrink:0;margin-top:.38rem}
 
-    footer{text-align:center;padding:1.3rem;font-size:.64rem;letter-spacing:.08em;background:var(--brown);color:#5a4a34;font-weight:500;text-transform:uppercase}
+    footer{text-align:center;padding:1.2rem;font-size:.63rem;letter-spacing:.08em;background:var(--brown);color:#5a4a34;font-weight:500;text-transform:uppercase}
   </style>
 </head>
 <body>
@@ -157,6 +128,7 @@
   <div class="nav-title">TWA Kintamani — Analisis Tumpang Tindih</div>
   <div class="nav-links">
     <a href="#peta">Peta</a>
+    <a href="#referensi">Peta Referensi</a>
     <a href="#metodologi">Metodologi</a>
   </div>
 </nav>
@@ -164,332 +136,284 @@
 <div class="hero">
   <div class="hero-bg"></div>
   <div class="hero-overlay"></div>
-  <div class="hero-label">Visualisasi Kawasan Konservasi &amp; Permukiman</div>
-  <h1>TWA Gunung Batur &amp; TWA Penelokan<br>vs Titik Permukiman Warga</h1>
-  <p>Analisis tumpang tindih batas kawasan konservasi BKSDA Bali dengan dua lokasi rumah warga di Kintamani, Bangli</p>
+  <div class="hero-label">BKSDA Bali — Kawasan Konservasi Kintamani</div>
+  <h1>TWA Gunung Batur Bukit Payang<br>&amp; TWA Panelokan vs Rumah Warga</h1>
+  <p>Analisis tumpang tindih dua kawasan Taman Wisata Alam dengan titik koordinat rumah warga di Kintamani, Bangli</p>
 </div>
 
-<!-- ALERT CARDS -->
-<div class="alert-row">
-  <div class="alert-card overlap">
-    <div class="alert-icon">⚠️</div>
+<!-- VERDICT -->
+<div class="verdict-row">
+  <div class="vcard unclear">
+    <div class="vcard-icon">⚠️</div>
     <div>
-      <div class="alert-title">Rumah Mbok Semiasih — Berpotensi di Dalam TWA Batur</div>
-      <div class="alert-desc">Koordinat <code>8°15'51.2"S, 115°23'17.2"E</code> berada di dalam bounding box resmi TWA Gunung Batur Bukit Payang (SK Menhut 2014). Perlu verifikasi lapangan dan overlay peta definitif.</div>
+      <div class="vcard-title">Rumah Mbok Semiasih — Tidak Jelas</div>
+      <div class="vcard-desc">Berada di dalam bounding box TWA Batur Bukit Payang, tapi ~2,86 km dari puncak — sedikit melampaui radius ekivalen kawasan. Posisi tepatnya terhadap batas poligon resmi tidak bisa ditentukan tanpa shapefile BKSDA.</div>
     </div>
   </div>
-  <div class="alert-card outside">
-    <div class="alert-icon">✓</div>
+  <div class="vcard inside">
+    <div class="vcard-icon">🔴</div>
     <div>
-      <div class="alert-title">Rumah Bu Pandi — Di Luar Batas TWA Batur</div>
-      <div class="alert-desc">Koordinat <code>8°17'40.5"S, 115°21'53.4"E</code> berada di selatan batas resmi TWA Batur. Posisinya juga di luar bounding box indikatif TWA Penelokan.</div>
+      <div class="vcard-title">Rumah Bu Pandi — Berpotensi di Dalam TWA Panelokan</div>
+      <div class="vcard-desc">Hanya 1,11 km dari centroid resmi TWA Panelokan (-8.284553, 115.364858). Bujur hampir identik. Dengan radius ekivalen ~1,35 km untuk kawasan 574 Ha, koordinat ini kemungkinan besar berada di dalam atau tepat di batas kawasan.</div>
     </div>
   </div>
 </div>
 
-<!-- MAP SECTION -->
-<div class="main" id="peta">
-  <div class="sec-header">
-    <div class="sec-title">
-      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="3 11 22 2 13 21 11 13 3 11"/>
-      </svg>
-      Peta Overlay Kawasan &amp; Titik Rumah
-    </div>
-    <p class="sec-sub">Klik area atau titik untuk detail &middot; Toggle layer untuk mematikan/menyalakan lapisan</p>
+<!-- MAP -->
+<div class="wrap" id="peta">
+  <div class="sec-title">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+    </svg>
+    Peta Overlay Kawasan TWA &amp; Titik Rumah
   </div>
+  <p class="sec-sub">Centroid kawasan dari data resmi BKSDA Bali. Poligon didigitasi berbasis centroid &amp; luas resmi — bukan shapefile definitif. Klik area atau marker untuk detail.</p>
   <div class="divider"></div>
 
   <div class="layer-bar">
-    <button class="layer-btn active" data-layer="all" style="color:#2c2416;border-color:#2c2416">Semua Layer</button>
-    <button class="layer-btn active" data-layer="twa-batur" style="color:var(--twa-batur);border-color:var(--twa-batur)">
-      <span class="swatch" style="background:rgba(26,111,168,0.4);border:1.5px solid #1a6fa8"></span>TWA Batur Bukit Payang
+    <button class="layer-btn active" data-l="batur" style="color:var(--batur);border-color:var(--batur)">
+      <span class="swatch" style="background:rgba(26,111,168,.4);border:1.5px solid var(--batur)"></span>TWA Batur Bukit Payang
     </button>
-    <button class="layer-btn active" data-layer="twa-penelokan" style="color:var(--twa-penelokan);border-color:var(--twa-penelokan)">
-      <span class="swatch" style="background:rgba(123,53,168,0.35);border:1.5px solid #7b35a8"></span>TWA Penelokan
+    <button class="layer-btn active" data-l="panelokan" style="color:var(--panelokan);border-color:var(--panelokan)">
+      <span class="swatch" style="background:rgba(123,53,168,.35);border:1.5px solid var(--panelokan)"></span>TWA Panelokan
     </button>
-    <button class="layer-btn active" data-layer="rumah" style="color:#b52b2b;border-color:#b52b2b">
-      <span class="dot" style="background:#b52b2b"></span>Titik Rumah
+    <button class="layer-btn active" data-l="rumah" style="color:var(--red);border-color:var(--red)">
+      <span class="dot" style="background:var(--red)"></span>Titik Rumah
     </button>
   </div>
 
   <div id="map"></div>
 
-  <div class="legend-wrap">
-    <div class="leg-item">
-      <span class="swatch" style="background:rgba(26,111,168,0.35);border:2px solid #1a6fa8"></span>
-      <span style="color:#1a6fa8">TWA Gunung Batur Bukit Payang (2.075 Ha)</span>
+  <div class="legend-row">
+    <div class="leg"><span class="swatch" style="background:rgba(26,111,168,.35);border:2px solid var(--batur)"></span><span style="color:var(--batur)">TWA Gunung Batur Bukit Payang — 2.075 Ha (centroid BKSDA)</span></div>
+    <div class="leg"><span class="swatch" style="background:rgba(123,53,168,.3);border:2px dashed var(--panelokan)"></span><span style="color:var(--panelokan)">TWA Panelokan — 574,27 Ha (centroid BKSDA)</span></div>
+    <div class="leg"><span class="dot" style="background:var(--red);width:.65rem;height:.65rem"></span><span style="color:var(--red)">Titik Rumah Warga</span></div>
+  </div>
+  <p style="font-size:.67rem;color:#9a8a78;margin-top:.4rem;font-style:italic">Poligon berbentuk lingkaran ekivalen dari centroid &amp; luas resmi BKSDA. Batas aktual mengikuti kontur medan — hanya bisa dipastikan dengan shapefile definitif dari BKSDA Bali.</p>
+
+  <!-- REFERENCE MAPS -->
+  <div id="referensi" style="margin-top:2rem">
+    <div class="sec-title">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+      </svg>
+      Peta Kawasan Resmi BKSDA Bali
     </div>
-    <div class="leg-item">
-      <span class="swatch" style="background:rgba(123,53,168,0.3);border:2px dashed #7b35a8"></span>
-      <span style="color:#7b35a8">TWA Penelokan / Panelokan (574,27 Ha)*</span>
-    </div>
-    <div class="leg-item">
-      <span class="dot" style="background:#e8380d;border:2px solid #fff;box-shadow:0 0 0 1.5px #e8380d;border-radius:50%;width:.7rem;height:.7rem"></span>
-      <span style="color:#b52b2b">Titik Rumah Warga</span>
-    </div>
-    <div class="leg-item">
-      <span class="dot" style="background:#2980b9;border-radius:50%;width:.7rem;height:.7rem"></span>
-      <span style="color:#2980b9">Danau Batur</span>
+    <p class="sec-sub">Peta yang dipublikasikan di laman kawasan konservasi BKSDA Bali — digunakan sebagai referensi digitasi.</p>
+    <div class="ref-maps">
+      <div class="ref-map-card">
+        <img src="https://ksda-bali.go.id/kawasan/gunung-batur-bukit-payang/HmJbZxEjeyOnFCQlUzwG8O3rqz7p98gA8gcBHGST.jpg"
+             alt="Peta TWA Gunung Batur Bukit Payang — BKSDA Bali"
+             onerror="this.style.display='none';this.nextSibling.style.display='block'"/>
+        <div style="display:none;padding:1rem;font-size:.75rem;color:#9a8a78;text-align:center">Gambar tidak dapat dimuat. <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/gunung-batur-bukit-payang" target="_blank" rel="noopener" style="color:var(--gold)">Lihat di BKSDA Bali ↗</a></div>
+        <div class="ref-map-label">TWA Gunung Batur Bukit Payang — Peta BKSDA Bali</div>
+      </div>
+      <div class="ref-map-card">
+        <img src="https://ksda-bali.go.id/kawasan/panelokan/vmsg9urYwi7OHaKDo0ecfMWmK3s1zeWckESB6UBd.jpg"
+             alt="Peta TWA Panelokan — BKSDA Bali"
+             onerror="this.style.display='none';this.nextSibling.style.display='block'"/>
+        <div style="display:none;padding:1rem;font-size:.75rem;color:#9a8a78;text-align:center">Gambar tidak dapat dimuat. <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/panelokan" target="_blank" rel="noopener" style="color:var(--gold)">Lihat di BKSDA Bali ↗</a></div>
+        <div class="ref-map-label">TWA Panelokan — Peta BKSDA Bali</div>
+      </div>
     </div>
   </div>
-  <p style="font-size:.68rem;color:#9a8a78;margin-top:.4rem;font-style:italic">* Batas kedua TWA bersifat indikatif berdasarkan koordinat tekstual dari dokumen resmi. Batas definitif hanya tersedia dalam peta cetak/shapefile BKSDA yang tidak dipublikasikan secara terbuka.</p>
 
   <!-- METHODOLOGY -->
-  <div class="methodology" id="metodologi">
+  <div class="info-box" id="metodologi">
     <h4>Catatan Metodologi &amp; Keterbatasan</h4>
-    <div class="meth-grid">
-      <div class="meth-item">
-        <strong>Batas TWA Batur Bukit Payang</strong><br>
-        Direkonstruksi dari koordinat bounding box resmi: 8°13'30.92"–8°16'41.91" LS, 115°20'30.31"–115°24'2.09" BT, berdasarkan <a href="https://id.wikipedia.org/wiki/Taman_Wisata_Alam_Gunung_Batur_Bukit_Payang" target="_blank" rel="noopener">data Wikipedia</a> yang mengacu profil BKSDA Bali. Ini adalah <em>bounding box persegi</em> — batas poligon asli mengikuti kontur medan dan kemungkinan lebih sempit.
+    <div class="info-grid">
+      <div class="info-item"><strong>Sumber centroid kawasan</strong><br>
+        TWA Batur: <code>-8.241706, 115.379317</code> (BKSDA Bali)<br>
+        TWA Panelokan: <code>-8.284553, 115.364858</code> (BKSDA Bali)<br>
+        Luas diambil dari laman resmi <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/" target="_blank" rel="noopener">BKSDA Bali</a>.
       </div>
-      <div class="meth-item">
-        <strong>Batas TWA Penelokan (Panelokan)</strong><br>
-        Direkonstruksi secara indikatif berdasarkan deskripsi teks dari <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/panelokan" target="_blank" rel="noopener">BKSDA Bali</a> dan berita terkait. Kawasan ini merupakan bagian dari RTK.8 Gunung Abang Agung (14.857,17 Ha), dengan luas TWA 574,27 Ha. <strong>Batas di peta ini bersifat estimasi</strong> — shapefile resmi harus diminta langsung ke BKSDA.
+      <div class="info-item"><strong>Metode digitasi</strong><br>
+        Poligon kawasan direkonstruksi sebagai <em>lingkaran ekivalen</em> dari centroid dan luas resmi (r = √(luas/π)). TWA Batur radius ~2,6 km; TWA Panelokan radius ~1,35 km. Ini <strong>bukan</strong> poligon kontur terrain aktual.
       </div>
-      <div class="meth-item">
-        <strong>Analisis tumpang tindih</strong><br>
-        Berdasarkan bounding box — bukan poligon definitif. Hasil "<span style="color:#b52b2b">berpotensi tumpang tindih</span>" menunjukkan titik berada di dalam area persegi koordinat resmi, bukan konfirmasi resmi. Verifikasi wajib dilakukan dengan peta definitif dari BKSDA Bali.
+      <div class="info-item"><strong>Rumah Mbok Semiasih</strong><br>
+        <code>-8.264222, 115.388111</code><br>
+        Jarak ke centroid TWA Batur: 2,86 km (radius ekivalen 2,6 km). Masuk bounding box koordinat Wikipedia untuk TWA Batur. Status: <strong>tidak bisa dipastikan tanpa shapefile</strong>.
       </div>
-      <div class="meth-item">
-        <strong>Koordinat rumah</strong><br>
-        Diberikan langsung oleh pengguna dalam format DMS (Degree Minute Second) dan dikonversi ke desimal:<br>
-        Mbok Semiasih: <code>-8.264222, 115.388111</code><br>
-        Bu Pandi: <code>-8.294583, 115.364833</code>
+      <div class="info-item"><strong>Rumah Bu Pandi</strong><br>
+        <code>-8.294583, 115.364833</code><br>
+        Jarak ke centroid TWA Panelokan: 1,11 km (radius ekivalen 1,35 km). Bujur hampir identik dengan centroid (selisih &lt;3m). Kemungkinan besar <strong>di dalam atau tepat di batas selatan</strong> TWA Panelokan.
       </div>
     </div>
   </div>
 
   <!-- SOURCES -->
-  <div class="sources">
+  <div class="info-box" style="margin-top:.8rem">
     <h4>Sumber Data</h4>
     <div class="src-list">
-      <div class="src-item">
-        <div class="src-dot"></div>
-        <span><strong>TWA Gunung Batur Bukit Payang</strong> — Koordinat &amp; luas: <a href="https://id.wikipedia.org/wiki/Taman_Wisata_Alam_Gunung_Batur_Bukit_Payang" target="_blank" rel="noopener">Wikipedia (mengacu BKSDA Bali)</a>; <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/gunung-batur-bukit-payang" target="_blank" rel="noopener">Profil BKSDA Bali</a>; SK Menhut No. SK.204/Menhut-II/2014.</span>
-      </div>
-      <div class="src-item">
-        <div class="src-dot"></div>
-        <span><strong>TWA Penelokan (Panelokan)</strong> — Luas 574,27 Ha: <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/panelokan" target="_blank" rel="noopener">Profil BKSDA Bali — Panelokan</a>; SK Mentan No. 655/Kpts/Um/10/1978; SK Menhut No. SK.2846/Menhut-VII/KUH/2014.</span>
-      </div>
-      <div class="src-item">
-        <div class="src-dot"></div>
-        <span><strong>Konteks konflik TWA Penelokan</strong> — <a href="https://ksda-bali.go.id/berita/langkah-kolaboratif-penyelesaian-bangunan-terbangun-di-twa-penelokan" target="_blank" rel="noopener">BKSDA Bali: Langkah Kolaboratif TWA Penelokan (2025)</a>; <a href="https://bali.antaranews.com/berita/393237/pemkab-bangli-dan-bksda-reboisasi-twa-penelokan-kintamani" target="_blank" rel="noopener">Antara News: Reboisasi TWA Penelokan (Nov 2025)</a>.</span>
-      </div>
-      <div class="src-item">
-        <div class="src-dot"></div>
-        <span><strong>The New Kintamani</strong> — <a href="https://ksda-bali.go.id/berita/balai-ksda-bali-menyampaikan-usulan-konsep-the-new-kintamani-pengelolaan-bentang-alam-yang-adaptif-dan-kolaboratif" target="_blank" rel="noopener">BKSDA Bali: Konsep The New Kintamani (8 Mei 2026)</a>; <a href="https://www.balipost.com/news/2026/05/11/549737/Pengelolaan-Kawasan-Hadapi-9-Isu...html" target="_blank" rel="noopener">Bali Post: 9 Isu Strategis Kintamani</a>.</span>
-      </div>
-      <div class="src-item">
-        <div class="src-dot"></div>
-        <span><strong>Peta dasar</strong> — <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>; citra satelit <a href="https://www.esri.com" target="_blank" rel="noopener">Esri World Imagery</a>.</span>
-      </div>
+      <div class="src-item"><div class="sdot"></div><span><strong>TWA Gunung Batur Bukit Payang</strong> — <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/gunung-batur-bukit-payang" target="_blank" rel="noopener">BKSDA Bali: Gunung Batur Bukit Payang</a>. Centroid: -8.241706/115.379317. SK Menhut SK.204/Menhut-II/2014.</span></div>
+      <div class="src-item"><div class="sdot"></div><span><strong>TWA Panelokan</strong> — <a href="https://ksda-bali.go.id/data-informasi/kawasan-konservasi/panelokan" target="_blank" rel="noopener">BKSDA Bali: Panelokan</a>. Centroid: -8.284553/115.364858. SK Menhut SK.2846/Menhut-VII/KUH/2014.</span></div>
+      <div class="src-item"><div class="sdot"></div><span><strong>Bounding box TWA Batur</strong> — <a href="https://id.wikipedia.org/wiki/Taman_Wisata_Alam_Gunung_Batur_Bukit_Payang" target="_blank" rel="noopener">Wikipedia TWA Gunung Batur Bukit Payang</a> (mengacu profil BKSDA): 8°13'30.92"–8°16'41.91" LS, 115°20'30.31"–115°24'2.09" BT.</span></div>
+      <div class="src-item"><div class="sdot"></div><span><strong>Koordinat rumah</strong> — Diberikan pengguna dalam format DMS, dikonversi ke desimal: Semiasih 8°15'51.2"S 115°23'17.2"E; Bu Pandi 8°17'40.5"S 115°21'53.4"E.</span></div>
+      <div class="src-item"><div class="sdot"></div><span><strong>Peta dasar</strong> — Citra satelit <a href="https://www.esri.com" target="_blank" rel="noopener">Esri World Imagery</a> + label <a href="https://www.openstreetmap.org" target="_blank" rel="noopener">OpenStreetMap</a>.</span></div>
     </div>
   </div>
 </div>
 
 <footer>
-  Kawasan konservasi: BKSDA Bali &middot; Analisis bersifat indikatif — batas poligon definitif hanya tersedia di BKSDA &middot; Kintamani, Kabupaten Bangli, Bali
+  Kawasan konservasi: BKSDA Bali · Analisis berdasarkan centroid &amp; luas resmi — batas poligon definitif hanya tersedia di BKSDA · Kintamani, Kabupaten Bangli, Bali
 </footer>
 
 <script>
-// ── KOORDINAT ──
-const SEMIASIH = { lat:-8.264222, lng:115.388111, nama:"Rumah Mbok Semiasih" };
-const PANDI    = { lat:-8.294583, lng:115.364833, nama:"Rumah Bu Pandi" };
+// ── DATA ──
+const SEMIASIH = {lat:-8.264222, lng:115.388111, nama:"Rumah Mbok Semiasih"};
+const PANDI    = {lat:-8.294583, lng:115.364833, nama:"Rumah Bu Pandi"};
 
-// TWA Gunung Batur Bukit Payang — bounding box dari koordinat resmi
-// 8°13'30.92"S – 8°16'41.91"S | 115°20'30.31"E – 115°24'2.09"E
-const TWA_BATUR_BBOX = [
-  [-8.225256, 115.341753], // NW
-  [-8.225256, 115.400581], // NE
-  [-8.278308, 115.400581], // SE
-  [-8.278308, 115.341753], // SW
-];
+// TWA Batur centroid dari BKSDA: -8.241706, 115.379317 → ini puncak Gunung Batur
+// Polygon ekivalen radius 2.6km
+const TWA_BATUR_CENTER = [-8.241706, 115.379317];
+const TWA_BATUR_R = 2.6; // km
 
-// TWA Penelokan — polygon indikatif berdasarkan deskripsi kawasan
-// (bagian barat kaldera, mencakup Penelokan, Kedisan, Buahan, sekitar Danau Batur barat)
-const TWA_PENELOKAN_POLY = [
-  [-8.221, 115.367],[-8.223, 115.380],[-8.228, 115.393],
-  [-8.235, 115.400],[-8.244, 115.404],[-8.252, 115.402],
-  [-8.260, 115.395],[-8.265, 115.385],[-8.268, 115.373],
-  [-8.271, 115.360],[-8.268, 115.348],[-8.260, 115.340],
-  [-8.250, 115.336],[-8.238, 115.338],[-8.228, 115.344],
-  [-8.222, 115.354],[-8.221, 115.367],
-];
+// TWA Panelokan centroid dari BKSDA: -8.284553, 115.364858
+// Polygon ekivalen radius 1.35km
+const TWA_PAN_CENTER = [-8.284553, 115.364858];
+const TWA_PAN_R = 1.35; // km
 
-// Danau Batur approximate
-const DANAU = [
-  [-8.2155,115.3752],[-8.2095,115.3831],[-8.2040,115.3940],
-  [-8.2010,115.4068],[-8.2038,115.4155],[-8.2120,115.4217],
-  [-8.2205,115.4229],[-8.2320,115.4190],[-8.2405,115.4095],
-  [-8.2490,115.3960],[-8.2510,115.3848],[-8.2450,115.3772],
-  [-8.2330,115.3728],[-8.2210,115.3725],[-8.2155,115.3752]
-];
+function makeCirclePoly(center, radiusKm, n=36) {
+  const pts = [];
+  for(let i=0; i<n; i++){
+    const a = 2*Math.PI*i/n;
+    const dlat = radiusKm/111.0;
+    const dlng = radiusKm/(111.0*Math.cos(center[0]*Math.PI/180));
+    pts.push([center[0]+dlat*Math.cos(a), center[1]+dlng*Math.sin(a)]);
+  }
+  return pts;
+}
 
-// ── MAP INIT ──
-const map = L.map('map', {center:[-8.260, 115.375], zoom:13});
+function distKm(lat1,lng1,lat2,lng2){
+  const dlat=(lat2-lat1)*111, dlng=(lng2-lng1)*111*Math.cos(lat1*Math.PI/180);
+  return Math.sqrt(dlat*dlat+dlng*dlng);
+}
 
-// Base layers
-const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
-  attribution:'&copy; OpenStreetMap',maxZoom:19
-});
-const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{
-  attribution:'Tiles &copy; Esri',maxZoom:19
-});
-const satLabel = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{
-  attribution:'',maxZoom:19,opacity:0.75
-});
+const d_s_batur = distKm(SEMIASIH.lat,SEMIASIH.lng,...TWA_BATUR_CENTER).toFixed(2);
+const d_p_batur = distKm(PANDI.lat,PANDI.lng,...TWA_BATUR_CENTER).toFixed(2);
+const d_s_pan   = distKm(SEMIASIH.lat,SEMIASIH.lng,...TWA_PAN_CENTER).toFixed(2);
+const d_p_pan   = distKm(PANDI.lat,PANDI.lng,...TWA_PAN_CENTER).toFixed(2);
 
-sat.addTo(map);
-satLabel.addTo(map);
+const semiasihInBatur    = parseFloat(d_s_batur) <= TWA_BATUR_R;
+const pandiInBatur       = parseFloat(d_p_batur) <= TWA_BATUR_R;
+const semiasihInPanelokan= parseFloat(d_s_pan)   <= TWA_PAN_R;
+const pandiInPanelokan   = parseFloat(d_p_pan)   <= TWA_PAN_R;
 
-// Layer control (base)
-L.control.layers({'Satelit':sat,'OpenStreetMap':osm},{},{position:'topright'}).addTo(map);
-sat.on('add', ()=>satLabel.addTo(map));
-osm.on('add', ()=>map.removeLayer(satLabel));
+// ── MAP ──
+const map = L.map('map',{center:[-8.265,115.373],zoom:13});
 
-// ── LAYERS ──
+const sat = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'Tiles &copy; Esri',maxZoom:19});
+const lbl = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',{attribution:'',maxZoom:19,opacity:.75});
+const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; OpenStreetMap',maxZoom:19});
 
-// Danau Batur
-L.polygon(DANAU, {
-  color:'#2471a3', fillColor:'#2980b9', fillOpacity:0.5, weight:1.5
-}).addTo(map).bindPopup(`<div class="popup-inner">
-  <div class="popup-type">Perairan</div>
-  <div class="popup-name">Danau Batur</div>
-  <div class="popup-desc">Danau terbesar di Bali. Luas ±16,05 km². Kedalaman rata-rata ~50,8 m (Bappeda Litbang Bali).</div>
-</div>`);
+sat.addTo(map); lbl.addTo(map);
+L.control.layers({'Satelit (Esri)':sat,'OpenStreetMap':osm}).addTo(map);
+sat.on('add',()=>lbl.addTo(map)); osm.on('add',()=>map.removeLayer(lbl));
 
 // TWA Batur
-const twaBaturLayer = L.polygon(TWA_BATUR_BBOX, {
-  color:'#1a6fa8', fillColor:'#1a6fa8', fillOpacity:0.22, weight:2.5,
-}).addTo(map).bindPopup(`<div class="popup-inner">
-  <div class="popup-type" style="color:#1a6fa8">Kawasan Konservasi</div>
-  <div class="popup-name">TWA Gunung Batur Bukit Payang</div>
-  <div class="popup-desc">Luas: 2.075 Ha (TWA) + 453 Ha HPT = 2.528 Ha total (RTK 7).<br>SK Menhut No. SK.204/Menhut-II/2014.<br><br><em>Batas di peta ini adalah bounding box koordinat resmi — poligon definitif belum dipublikasikan.</em></div>
+const baturPoly = L.polygon(makeCirclePoly(TWA_BATUR_CENTER, TWA_BATUR_R),{
+  color:'#1a6fa8',fillColor:'#1a6fa8',fillOpacity:.2,weight:2.5
+}).bindPopup(`<div class="pi">
+  <div class="pt" style="color:#1a6fa8">Kawasan Konservasi</div>
+  <div class="pn">TWA Gunung Batur Bukit Payang</div>
+  <div class="pc">Centroid BKSDA: -8.241706, 115.379317</div>
+  <div class="pd">Luas: 2.075 Ha (TWA) + 453 Ha HPT = 2.528 Ha total (RTK 7).<br>SK Menhut SK.204/Menhut-II/2014.<br><br>Centroid bertepatan dengan puncak Gunung Batur — kawasan meliputi kerucut vulkanik &amp; lerengnya.</div>
+  <div class="pnote">Poligon = lingkaran ekivalen radius 2,6 km dari centroid resmi BKSDA.</div>
 </div>`);
 
-// TWA Penelokan
-const twaPenelokanLayer = L.polygon(TWA_PENELOKAN_POLY, {
-  color:'#7b35a8', fillColor:'#7b35a8', fillOpacity:0.18, weight:2,
-  dashArray:'10,5'
-}).addTo(map).bindPopup(`<div class="popup-inner">
-  <div class="popup-type" style="color:#7b35a8">Kawasan Konservasi</div>
-  <div class="popup-name">TWA Penelokan (Panelokan)</div>
-  <div class="popup-desc">Luas: 574,27 Ha. Bagian dari RTK.8 Gunung Abang Agung.<br>SK Mentan 655/1978; SK Menhut 2846/2014.<br><br><em>Batas di peta ini bersifat indikatif — shapefile definitif hanya di BKSDA Bali.</em></div>
+// TWA Panelokan
+const panelokanPoly = L.polygon(makeCirclePoly(TWA_PAN_CENTER, TWA_PAN_R),{
+  color:'#7b35a8',fillColor:'#7b35a8',fillOpacity:.18,weight:2,dashArray:'8,5'
+}).bindPopup(`<div class="pi">
+  <div class="pt" style="color:#7b35a8">Kawasan Konservasi</div>
+  <div class="pn">TWA Panelokan</div>
+  <div class="pc">Centroid BKSDA: -8.284553, 115.364858</div>
+  <div class="pd">Luas: 574,27 Ha. Bagian dari RTK.8 Gunung Abang Agung (14.857,17 Ha).<br>SK Menhut SK.2846/Menhut-VII/KUH/2014.<br><br>Kawasan meliputi area Penelokan (viewpoint) dan sekitarnya di bagian barat kaldera.</div>
+  <div class="pnote">Poligon = lingkaran ekivalen radius 1,35 km dari centroid resmi BKSDA.</div>
 </div>`);
+
+// Centroid markers (kecil)
+const centroidIcon = (color) => L.divIcon({
+  className:'',
+  html:`<svg width="10" height="10" viewBox="0 0 10 10"><circle cx="5" cy="5" r="4" fill="${color}" opacity=".7" stroke="#fff" stroke-width="1"/></svg>`,
+  iconSize:[10,10],iconAnchor:[5,5]
+});
+L.marker(TWA_BATUR_CENTER,{icon:centroidIcon('#1a6fa8')}).addTo(map)
+  .bindTooltip('Centroid TWA Batur (BKSDA)',{direction:'top'});
+L.marker(TWA_PAN_CENTER,{icon:centroidIcon('#7b35a8')}).addTo(map)
+  .bindTooltip('Centroid TWA Panelokan (BKSDA)',{direction:'top'});
 
 // ── RUMAH MARKERS ──
-function makeHouseIcon(color, label) {
+function houseIcon(color, label) {
   return L.divIcon({
-    className: '',
-    html: `<div style="
-      position:relative;
-      display:flex;flex-direction:column;align-items:center;
-    ">
-      <svg width="28" height="28" viewBox="0 0 28 28">
-        <circle cx="14" cy="14" r="12" fill="${color}" stroke="#fff" stroke-width="2.5"/>
-        <text x="14" y="19" text-anchor="middle" font-size="14" fill="#fff">🏠</text>
-      </svg>
-      <div style="
-        background:${color};color:#fff;font-size:10px;font-weight:700;
-        padding:2px 6px;border-radius:3px;margin-top:2px;white-space:nowrap;
-        box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:Plus Jakarta Sans,sans-serif;
-      ">${label}</div>
+    className:'',
+    html:`<div style="display:flex;flex-direction:column;align-items:center">
+      <div style="background:${color};width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+      </div>
+      <div style="background:${color};color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:3px;margin-top:3px;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.3);font-family:Plus Jakarta Sans,sans-serif">${label}</div>
     </div>`,
-    iconSize:[80,52],iconAnchor:[40,14],popupAnchor:[0,-16]
+    iconSize:[100,52],iconAnchor:[50,15],popupAnchor:[0,-18]
   });
 }
 
-// Check overlap helper (bounding box check)
-function inBBox(lat, lng, poly) {
-  const lats = poly.map(p => p[0]);
-  const lngs = poly.map(p => p[1]);
-  return lat >= Math.min(...lats) && lat <= Math.max(...lats) &&
-         lng >= Math.min(...lngs) && lng <= Math.max(...lngs);
-}
-
-function pointInPolygon(lat, lng, poly) {
-  let inside = false;
-  for(let i=0, j=poly.length-1; i<poly.length; j=i++) {
-    const xi=poly[i][0], yi=poly[i][1];
-    const xj=poly[j][0], yj=poly[j][1];
-    if(((yi>lng)!==(yj>lng)) && (lat<(xj-xi)*(lng-yi)/(yj-yi)+xi)) inside=!inside;
-  }
-  return inside;
-}
-
-const semiasihInBatur     = inBBox(SEMIASIH.lat, SEMIASIH.lng, TWA_BATUR_BBOX);
-const semiasihInPenelokan = pointInPolygon(SEMIASIH.lat, SEMIASIH.lng, TWA_PENELOKAN_POLY);
-const pandiInBatur        = inBBox(PANDI.lat, PANDI.lng, TWA_BATUR_BBOX);
-const pandiInPenelokan    = pointInPolygon(PANDI.lat, PANDI.lng, TWA_PENELOKAN_POLY);
-
-function statusBadge(inside, twa) {
-  if(inside) return `<span class="popup-status inside">⚠ Di dalam ${twa}</span>`;
-  return `<span class="popup-status outside">✓ Di luar ${twa}</span>`;
+function statusTag(inside, unknown, label) {
+  if(unknown) return `<span class="ps unk">? ${label}: tidak pasti</span>`;
+  if(inside)  return `<span class="ps in">⚠ Di dalam ${label}</span>`;
+  return `<span class="ps out">✓ Di luar ${label}</span>`;
 }
 
 const rumahGroup = L.layerGroup();
 
-// Semiasih
-L.marker([SEMIASIH.lat, SEMIASIH.lng], {
-  icon: makeHouseIcon(semiasihInBatur ? '#b52b2b' : '#2e7d48', 'Mbok Semiasih')
-}).bindPopup(`<div class="popup-inner">
-  <div class="popup-type" style="color:#b52b2b">Titik Rumah Warga</div>
-  <div class="popup-name">Rumah Mbok Semiasih</div>
-  <div class="popup-coord">8°15'51.2"S, 115°23'17.2"E<br>(-8.264222, 115.388111)</div>
-  <div style="display:flex;flex-direction:column;gap:.25rem;margin-bottom:.35rem">
-    ${statusBadge(semiasihInBatur, 'TWA Batur Bukit Payang')}
-    ${statusBadge(semiasihInPenelokan, 'TWA Penelokan')}
+// Semiasih — tidak pasti untuk Batur, jelas di luar Panelokan
+const sColor = '#c0832a'; // amber = tidak pasti
+L.marker([SEMIASIH.lat,SEMIASIH.lng],{icon:houseIcon(sColor,'Mbok Semiasih')})
+.bindPopup(`<div class="pi">
+  <div class="pt" style="color:#9a6a10">Titik Rumah Warga</div>
+  <div class="pn">Rumah Mbok Semiasih</div>
+  <div class="pc">8°15'51.2"S 115°23'17.2"E<br>(-8.264222, 115.388111)</div>
+  <div style="display:flex;flex-direction:column;gap:.22rem;margin-bottom:.3rem">
+    ${statusTag(false,true,'TWA Batur')}
+    ${statusTag(false,false,'TWA Panelokan')}
   </div>
-  <div class="popup-note">⚠ Hasil analisis bounding box — belum tentu di dalam poligon resmi TWA. Verifikasi diperlukan dengan peta definitif BKSDA.</div>
+  <div class="pd">Jarak ke centroid TWA Batur: <strong>${d_s_batur} km</strong> (radius ekivalen 2,6 km).<br>Masuk dalam bounding box koordinat resmi Wikipedia untuk TWA Batur, tapi sedikit melampaui radius ekivalen.</div>
+  <div class="pnote">Tidak bisa dipastikan tanpa shapefile poligon definitif dari BKSDA Bali.</div>
 </div>`).addTo(rumahGroup);
 
-// Bu Pandi
-L.marker([PANDI.lat, PANDI.lng], {
-  icon: makeHouseIcon('#2e7d48', 'Bu Pandi')
-}).bindPopup(`<div class="popup-inner">
-  <div class="popup-type" style="color:#2e7d48">Titik Rumah Warga</div>
-  <div class="popup-name">Rumah Bu Pandi</div>
-  <div class="popup-coord">8°17'40.5"S, 115°21'53.4"E<br>(-8.294583, 115.364833)</div>
-  <div style="display:flex;flex-direction:column;gap:.25rem;margin-bottom:.35rem">
-    ${statusBadge(pandiInBatur, 'TWA Batur Bukit Payang')}
-    ${statusBadge(pandiInPenelokan, 'TWA Penelokan')}
+// Bu Pandi — kemungkinan di dalam Panelokan
+const pColor = '#c0392b';
+L.marker([PANDI.lat,PANDI.lng],{icon:houseIcon(pColor,'Bu Pandi')})
+.bindPopup(`<div class="pi">
+  <div class="pt" style="color:var(--red)">Titik Rumah Warga</div>
+  <div class="pn">Rumah Bu Pandi</div>
+  <div class="pc">8°17'40.5"S 115°21'53.4"E<br>(-8.294583, 115.364833)</div>
+  <div style="display:flex;flex-direction:column;gap:.22rem;margin-bottom:.3rem">
+    ${statusTag(false,false,'TWA Batur')}
+    ${statusTag(true,false,'TWA Panelokan')}
   </div>
-  <div class="popup-note">Koordinat ini berada di selatan batas selatan TWA Batur dan di luar batas indikatif TWA Penelokan.</div>
+  <div class="pd">Jarak ke centroid TWA Panelokan: <strong>${d_p_pan} km</strong> (radius ekivalen 1,35 km).<br>Bujur hampir identik dengan centroid BKSDA (selisih &lt;3 meter).<br>Kemungkinan besar berada <strong>di dalam atau di batas selatan</strong> TWA Panelokan.</div>
+  <div class="pnote">Diperlukan verifikasi lapangan &amp; peta definitif BKSDA untuk kepastian hukum.</div>
 </div>`).addTo(rumahGroup);
 
 rumahGroup.addTo(map);
 
-// Fit bounds to all content
-map.fitBounds([
-  [-8.220, 115.335],
-  [-8.305, 115.410]
-], {padding:[30,30]});
+// Layer groups
+const layers = { batur:baturPoly, panelokan:panelokanPoly, rumah:rumahGroup };
+[baturPoly,panelokanPoly].forEach(l=>l.addTo(map));
 
-// ── LAYER TOGGLE ──
-const layerMap = {
-  'twa-batur': twaBaturLayer,
-  'twa-penelokan': twaPenelokanLayer,
-  'rumah': rumahGroup,
-};
+// Fit bounds
+map.fitBounds([[-8.210,115.345],[-8.310,115.410]],{padding:[20,20]});
 
-document.querySelectorAll('.layer-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const k = btn.dataset.layer;
-    if(k === 'all') {
-      const allActive = Object.values(layerMap).every(l => map.hasLayer(l));
-      Object.entries(layerMap).forEach(([key, layer]) => {
-        allActive ? map.removeLayer(layer) : layer.addTo(map);
-      });
-      document.querySelectorAll('.layer-btn[data-layer!="all"]').forEach(b => {
-        b.classList.toggle('active', !allActive);
-      });
-      btn.classList.toggle('active', !allActive);
-    } else {
-      const layer = layerMap[k];
-      if(map.hasLayer(layer)) { map.removeLayer(layer); btn.classList.remove('active'); }
-      else { layer.addTo(map); btn.classList.add('active'); }
-    }
+// Toggle
+document.querySelectorAll('.layer-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    const k=btn.dataset.l;
+    const layer=layers[k];
+    if(map.hasLayer(layer)){map.removeLayer(layer);btn.classList.remove('active')}
+    else{layer.addTo(map);btn.classList.add('active')}
   });
 });
 </script>
